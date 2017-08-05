@@ -1,0 +1,57 @@
+// 清除浮动通用写法
+@mixin clearfix {
+
+  // ie6/7下使用
+  & { *zoom: 1; }
+  // 现代浏览器使用
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+// 生成行
+@mixin make-row($colums, $gutter) {
+
+  // 生成行的类名为：".row-列数-列与列之间的距离px"
+  .row-#{$colums}-#{$gutter} {  
+
+    // 清除浮动带来的影响
+    @include clearfix;
+
+    // 使用ul的时候有默认的padding和margin值，还有list-style-type样式，需要重置
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    // 增加每行的宽度为：父元素宽度 + 列间距
+    margin-left: -$gutter/2;
+    margin-right: -$gutter/2;
+
+    // 生成列
+    .col { @include make-col($colums, $gutter) }
+  }
+}
+
+// 生成列
+@mixin make-col($colums, $gutter) {
+
+  // 让每列浮动从而可以水平排列
+  float: left;
+
+  // 宽度为等分父元素的百分比值，可以减去0.0001%去兼容ie6/7
+  width: percentage(1/$colums);
+  min-height: 1px;
+
+  // 列里边的容器通过设置padding值来制造列间距，容器里边的元素才是真正的内容
+  .container {
+    padding-left: $gutter/2;
+    padding-right: $gutter/2;
+  }
+}
+
+// 第一个参数： 要生成的列数
+// 第二个参数： 列与列之间的宽度
+@include make-row(4, 30px);
+@include make-row(6, 44px);
